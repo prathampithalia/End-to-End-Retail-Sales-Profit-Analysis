@@ -105,11 +105,11 @@ ORDER BY growth_percent DESC;
 
 -- 5) Monthly sales trend (YYYY-MM)
 SELECT 
-    DATE_FORMAT(order_date, '%Y-%m') AS year_month,
+    DATE_FORMAT(order_date, '%Y-%m') AS ym,
     SUM(sales) AS total_sales
 FROM df_orders
 GROUP BY DATE_FORMAT(order_date, '%Y-%m')
-ORDER BY year_month;
+ORDER BY ym;
 
 
 -- 6) Month-over-Month (MoM) Growth % (overall)
@@ -193,7 +193,7 @@ ORDER BY contribution_percent DESC;
 WITH cat_month_sales AS (
     SELECT 
         category,
-        DATE_FORMAT(order_date, '%Y%m') AS order_year_month,
+        DATE_FORMAT(order_date, '%Y%m') AS order_ym,
         SUM(sales) AS sales
     FROM df_orders
     GROUP BY category, DATE_FORMAT(order_date, '%Y%m')
@@ -202,7 +202,7 @@ SELECT *
 FROM (
     SELECT 
         category,
-        order_year_month,
+        order_ym,
         sales,
         ROW_NUMBER() OVER (PARTITION BY category ORDER BY sales DESC) AS rn
     FROM cat_month_sales
