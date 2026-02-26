@@ -291,35 +291,3 @@ SELECT
 FROM df_orders
 GROUP BY region, category
 ORDER BY region, total_sales DESC;
-
-
-/* 
-============================================================
-   SECTION 5: Anomaly Detection (Outlier Months)
-============================================================ 
-*/
-
--- 15) Identify sales outlier months using mean ± 2*stddev
-WITH monthly_sales AS (
-    SELECT 
-        DATE_FORMAT(order_date, '%Y-%m') AS ym,
-        SUM(sales) AS sales
-    FROM df_orders
-    GROUP BY DATE_FORMAT(order_date, '%Y-%m')
-),
-stats AS (
-    SELECT 
-        AVG(sales) AS avg_sales,
-        STDDEV_SAMP(sales) AS std_sales
-    FROM monthly_sales
-)
-SELECT 
-    m.ym,
-    m.sales,
-    s.avg_sales,
-    s.std_sales
-FROM monthly_sales m
-CROSS JOIN stats s
-WHERE m.sales > s.avg_sales + 2*s.std_sales
-   OR m.sales < s.avg_sales - 2*s.std_sales
-ORDER BY m.ym;
